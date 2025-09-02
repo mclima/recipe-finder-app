@@ -9,6 +9,7 @@ const RecipePage = () => {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [apiLimitReached, setApiLimitReached] = useState(false);
+  const [apiErrorMessage, setApiErrorMessage] = useState('');
   const navigate = useNavigate();
   const summaryRef = useRef(null);
 
@@ -25,9 +26,11 @@ const RecipePage = () => {
         const response = await fetch(url);
         const data = await response.json();
         
-        if (data.code === 402) {
-          // API quota exceeded
+        console.log('Recipe API Response:', data);
+        
+        if (data.code === 402 || data.status === 'failure' || data.message?.includes('limit')) {
           setApiLimitReached(true);
+          setApiErrorMessage('Daily API request limit reached. Please try again tomorrow.');
           setRecipe(null);
         } else {
           setRecipe(data);
@@ -72,8 +75,8 @@ const RecipePage = () => {
     return (
       <div className="container my-5">
         <div className="alert alert-warning text-center" role="alert">
-          <h4 className="alert-heading">Daily API request limit reached!</h4>
-          <p>We've reached the daily limit for recipe requests. Please try again tomorrow.</p>
+          <h4 className="alert-heading">API Error</h4>
+          <p>{apiErrorMessage}</p>
           <hr />
           <Link to="/" className="btn btn-outline-secondary">Back to Search</Link>
         </div>

@@ -85,7 +85,9 @@ function App() {
       const response = await fetch(url);
       const data = await response.json();
       
-      if (data.code === 402) {
+      console.log('API Response:', data);
+      
+      if (data.code === 402 || data.status === 'failure' || data.message?.includes('limit')) {
         setErrorMessage('Daily API request limit reached. Please try again tomorrow.');
         setRecipes([]);
       } else if (!data.results || data.results.length === 0) {
